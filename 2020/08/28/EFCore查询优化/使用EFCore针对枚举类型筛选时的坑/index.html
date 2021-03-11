@@ -10,7 +10,7 @@
   <meta name="description" content="使用EFCore针对枚举类型筛选时的坑EF条件中默认不支持枚举类型，枚举类型无法转换为sql语句去查询，最后的结果是在内存中查询的，导致最后得到的数据以及性能都有差距。例如： &#x2F;&#x2F;&#x2F; &lt;summary&gt; &#x2F;&#x2F;&#x2F; 文件类型 &#x2F;&#x2F;&#x2F; &lt;&#x2F;summary&gt; public enum FileTypeEnum {     &#x2F;&#x2F;&#x2F; &lt;summary&gt;     &#x2F;&#x2F;&#x2F; 未知">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用EFCore针对枚举类型筛选时的坑">
-<meta property="og:url" content="https://blog.bflove.cn/blog/2020/08/28/EFCore%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/%E4%BD%BF%E7%94%A8EFCore%E9%92%88%E5%AF%B9%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E7%AD%9B%E9%80%89%E6%97%B6%E7%9A%84%E5%9D%91/index.html">
+<meta property="og:url" content="https://blog.bflove.cn/2020/08/28/EFCore%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/%E4%BD%BF%E7%94%A8EFCore%E9%92%88%E5%AF%B9%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E7%AD%9B%E9%80%89%E6%97%B6%E7%9A%84%E5%9D%91/index.html">
 <meta property="og:site_name" content="聽雨聲-成功來源於不斷的堅持">
 <meta property="og:description" content="使用EFCore针对枚举类型筛选时的坑EF条件中默认不支持枚举类型，枚举类型无法转换为sql语句去查询，最后的结果是在内存中查询的，导致最后得到的数据以及性能都有差距。例如： &#x2F;&#x2F;&#x2F; &lt;summary&gt; &#x2F;&#x2F;&#x2F; 文件类型 &#x2F;&#x2F;&#x2F; &lt;&#x2F;summary&gt; public enum FileTypeEnum {     &#x2F;&#x2F;&#x2F; &lt;summary&gt;     &#x2F;&#x2F;&#x2F; 未知">
 <meta property="og:locale" content="en_US">
@@ -60,7 +60,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.bflove.cn/blog"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.bflove.cn"></form>
       </div>
     </div>
   </div>
@@ -195,7 +195,7 @@ public class FileMap : IEntityMap&lt;Files&gt;
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/blog/2020/08/28/EFCore%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/%E4%BD%BF%E7%94%A8EFCore%E9%92%88%E5%AF%B9%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E7%AD%9B%E9%80%89%E6%97%B6%E7%9A%84%E5%9D%91/" data-id="ckm35w80700031cvsaqtcfcib" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2020/08/28/EFCore%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/%E4%BD%BF%E7%94%A8EFCore%E9%92%88%E5%AF%B9%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E7%AD%9B%E9%80%89%E6%97%B6%E7%9A%84%E5%9D%91/" data-id="ckm35w80700031cvsaqtcfcib" class="article-share-link">Share</a>
       
       
     </footer>
