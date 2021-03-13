@@ -15,8 +15,9 @@
 <meta property="og:description" content="ASP.NET Core 支持依赖关系注入 (DI) 软件设计模式，这是一种在类及其依赖关系之间实现控制反转 (IoC) 的技术。依赖注入是控制反转思想的一种实现模式。一种消除类之间依赖关系的设计模式。优点：  轻松管理类及类之间的依赖； 减少代码耦合性； 提高代码维护性和可扩展性； 由容器统一创建对象和管理生命周期  依赖注入的三种方式：属性注入、方法注入、构造函数注入  服务的生命周期：Sin">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://blog.bflove.cn/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/20210311145730.jpg">
+<meta property="og:image" content="https://blog.bflove.cn/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/1800602-20191101092932547-1922239083.png">
 <meta property="article:published_time" content="2021-03-10T08:11:07.000Z">
-<meta property="article:modified_time" content="2021-03-11T06:59:53.150Z">
+<meta property="article:modified_time" content="2021-03-13T07:19:48.133Z">
 <meta property="article:author" content="聽雨聲">
 <meta property="article:tag" content="IOC 依赖注入">
 <meta name="twitter:card" content="summary">
@@ -133,12 +134,30 @@
 <p>控制反转（IoC）：一种反转流、依赖和接口的方式（DIP的具体实现方式）。</p>
 <p>依赖注入（DI）：IoC的一种实现方式，用来反转依赖（IoC的具体实现方式）。</p>
 <p>IoC容器：依赖注入的框架，用来映射依赖，管理对象创建和生存周期（DI框架）。</p>
-<p>参考1：<a href="https://www.cnblogs.com/chenwolong/p/DI.html" target="_blank" rel="noopener">https://www.cnblogs.com/chenwolong/p/DI.html</a><br>参考1：<a href="https://blog.csdn.net/weixin_39799646/article/details/110802690" target="_blank" rel="noopener">https://blog.csdn.net/weixin_39799646/article/details/110802690</a></p>
+<p>参考1：<a href="https://www.cnblogs.com/chenwolong/p/DI.html" target="_blank" rel="noopener">https://www.cnblogs.com/chenwolong/p/DI.html</a><br>参考2：<a href="https://blog.csdn.net/weixin_39799646/article/details/110802690" target="_blank" rel="noopener">https://blog.csdn.net/weixin_39799646/article/details/110802690</a><br>参考3：<a href="https://www.cnblogs.com/leoninew/p/try-microsoft-di-1.html" target="_blank" rel="noopener">https://www.cnblogs.com/leoninew/p/try-microsoft-di-1.html</a></p>
+<ol>
+<li><p>结果缓存分为四种：Root、Scope、Dispose、None</p>
+</li>
+<li><p>每个提供六种可得到其实现：Factory、IEnumerable、Constructor、Constant、ServiceProvider、ServiceScopeFactory<br> <img src="/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/1800602-20191101092932547-1922239083.png" alt="avatar"></p>
+</li>
+<li><p>CallSiteFactory、CallSiteRuntimeResolver、ExpressionResolverBuilder是目标服务实例化的核心实现：</p>
+<pre><code>CallSiteFactory：解析和缓存目标服务的实例化上下文
+CallSiteRuntimeResolver：使用反射完成目标服务的实例化
+ExpressionResolverBuilder：使用表达式树得到目标服务的实例化的前置委托</code></pre></li>
+<li><p>ServiceProvider通过特殊的委托完成了目标服务实例化方式的替换：</p>
+</li>
+<li><p>初次调用GetService()时，首先通过DynamicServiceProviderEngine返回了委托，该委托被存储到字典 RealizedServices中；接着该委托被第1次执行，通过CallSiteRuntimeResolver完成目标服务的实例化；</p>
+</li>
+<li><p>再将调用GetService()时，直接得到缓存的委托并同样完成目标服务的实例，同时通过一个额外的 Task，通过ExpressionResolverBuilder 使用表达式树重新生成委托，并操作字典RealizedServices，替换初次调用生成委托；</p>
+</li>
+<li><p>后续调用GetService()时，字典RealizedServices查找到的是已经替换过的使用表达式树生成的委托。</p>
+</li>
+</ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" data-id="ckm4irnjv00078kvscwtq2r7i" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" data-id="ckm7er4x00001qsvsdmkrduxv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IOC-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" rel="tag">IOC 依赖注入</a></li></ul>
@@ -149,19 +168,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2021/03/10/NetCore/%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC%EF%BC%88IoC%EF%BC%89/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          控制反转
-        
-      </div>
-    </a>
   
-  
-    <a href="/2021/03/10/%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/%E5%8F%8D%E5%B0%84/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2021/03/10/NetCore/%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC%EF%BC%88IoC%EF%BC%89/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">高级编程/反射</div>
+      <div class="article-nav-title">控制反转</div>
     </a>
   
 </nav>
@@ -212,11 +222,11 @@
       <ul>
         
           <li>
-            <a href="/2021/03/10/NetCore/%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC%EF%BC%88IoC%EF%BC%89/">控制反转</a>
+            <a href="/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/">依赖注入</a>
           </li>
         
           <li>
-            <a href="/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/">依赖注入</a>
+            <a href="/2021/03/10/NetCore/%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC%EF%BC%88IoC%EF%BC%89/">控制反转</a>
           </li>
         
           <li>
