@@ -17,7 +17,7 @@
 <meta property="og:image" content="https://blog.bflove.cn/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/20210311145730.jpg">
 <meta property="og:image" content="https://blog.bflove.cn/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/1800602-20191101092932547-1922239083.png">
 <meta property="article:published_time" content="2021-03-10T08:11:07.000Z">
-<meta property="article:modified_time" content="2021-03-13T07:19:48.133Z">
+<meta property="article:modified_time" content="2021-03-13T07:37:08.071Z">
 <meta property="article:author" content="聽雨聲">
 <meta property="article:tag" content="IOC 依赖注入">
 <meta name="twitter:card" content="summary">
@@ -134,8 +134,7 @@
 <p>控制反转（IoC）：一种反转流、依赖和接口的方式（DIP的具体实现方式）。</p>
 <p>依赖注入（DI）：IoC的一种实现方式，用来反转依赖（IoC的具体实现方式）。</p>
 <p>IoC容器：依赖注入的框架，用来映射依赖，管理对象创建和生存周期（DI框架）。</p>
-<p>参考1：<a href="https://www.cnblogs.com/chenwolong/p/DI.html" target="_blank" rel="noopener">https://www.cnblogs.com/chenwolong/p/DI.html</a><br>参考2：<a href="https://blog.csdn.net/weixin_39799646/article/details/110802690" target="_blank" rel="noopener">https://blog.csdn.net/weixin_39799646/article/details/110802690</a><br>参考3：<a href="https://www.cnblogs.com/leoninew/p/try-microsoft-di-1.html" target="_blank" rel="noopener">https://www.cnblogs.com/leoninew/p/try-microsoft-di-1.html</a></p>
-<ol>
+<h4><span id="扩展篇">扩展篇</span></h4><ol>
 <li><p>结果缓存分为四种：Root、Scope、Dispose、None</p>
 </li>
 <li><p>每个提供六种可得到其实现：Factory、IEnumerable、Constructor、Constant、ServiceProvider、ServiceScopeFactory<br> <img src="/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/1800602-20191101092932547-1922239083.png" alt="avatar"></p>
@@ -153,11 +152,12 @@ ExpressionResolverBuilder：使用表达式树得到目标服务的实例化的�
 <li><p>后续调用GetService()时，字典RealizedServices查找到的是已经替换过的使用表达式树生成的委托。</p>
 </li>
 </ol>
+<p>参考1：<a href="https://www.cnblogs.com/chenwolong/p/DI.html" target="_blank" rel="noopener">https://www.cnblogs.com/chenwolong/p/DI.html</a><br>参考2：<a href="https://blog.csdn.net/weixin_39799646/article/details/110802690" target="_blank" rel="noopener">https://blog.csdn.net/weixin_39799646/article/details/110802690</a><br>参考3：<a href="https://www.cnblogs.com/leoninew/p/try-microsoft-di-1.html" target="_blank" rel="noopener">https://www.cnblogs.com/leoninew/p/try-microsoft-di-1.html</a><br>参考4：<a href="https://blog.csdn.net/qq_36056619/article/details/104210228" target="_blank" rel="noopener">https://blog.csdn.net/qq_36056619/article/details/104210228</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" data-id="ckm7er4x00001qsvsdmkrduxv" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" data-id="ckm7fq9y600015wvs44lq3w4k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IOC-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" rel="tag">IOC 依赖注入</a></li></ul>
