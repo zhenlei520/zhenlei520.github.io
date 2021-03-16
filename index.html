@@ -64,6 +64,423 @@
       <div class="outer">
         <section id="main">
   
+    <article id="3.-ElasticSearch/第三章：数据" class="article article-type-3." itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/03/16/ElasticSearch/%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E6%95%B0%E6%8D%AE/" class="article-date">
+  <time datetime="2021-03-16T02:00:00.000Z" itemprop="datePublished">2021-03-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/16/ElasticSearch/%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E6%95%B0%E6%8D%AE/">数据</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ol>
+<li><p>创建一个新文档：</p>
+<ol>
+<li><p>最简单的方式是使用 POST 方法让 Elasticsearch自动生成唯一_id:然而，如果想使用自定义的_id，我们必须告诉Elasticsearch应该在 _index、_type、_id 三者都不同时才接受请求。为了 做到这点有两种方法，它们其实做的是同一件事情。</p>
+<ol>
+<li><p>使用 op_type 查询参数 /website/blog/123?op_type=create{…}</p>
+</li>
+<li><p>是在URL后加 /_create 做为端点 PUT /website/blog/123/_create { … }</p>
+<p>如果请求成功的创建了一个新文档，Elasticsearch将返回正常的元数据且响应状态码是 201 Created。如果信息已存在，则返回409状态码</p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p>删除文档</p>
+<p> DELETE /website/blog/123</p>
+</li>
+<li><p>幻读的解决办法：</p>
+<ol>
+<li>悲观并发控制（Pessimistic concurrency control）：在关系型数据库中被广泛的使用，假设冲突的更改经常发生，为了解决冲突我们把访问区块化。典型的例子是在读一行数 据前锁定这行，然后确保只有加锁的那个线程可以修改这行数据。</li>
+<li>乐观并发控制（Optimistic concurrency control）：假设冲突不经常发生，也不区块化访问，然而，如果在读写过程中数据发生了变化，更新操作将失 败。这时候由程序决定在失败后如何解决冲突。实际情况中，可以重新尝试更新，刷新数据（重新读取）或者直接反馈给用 户。</li>
+</ol>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://blog.bflove.cn/2021/03/16/ElasticSearch/%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E6%95%B0%E6%8D%AE/" data-id="ckmbj9dtt0001tgvsf9a9df2k" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ElasticSearch/" rel="tag">ElasticSearch</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="2.-ElasticSearch/第二章：分布式集群" class="article article-type-2." itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/03/16/ElasticSearch/%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E9%9B%86%E7%BE%A4/" class="article-date">
+  <time datetime="2021-03-16T02:00:00.000Z" itemprop="datePublished">2021-03-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/16/ElasticSearch/%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E9%9B%86%E7%BE%A4/">分布式集群</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>优点：</p>
+<p>ElasticSearch隐藏了分布式系统的复杂性，以下操作都是在底层自动完成的：</p>
+<pre><code>1. 将你的文档分区到不同的容器或者分片(shards)中，它们可以存在于一个或多个节点中。 
+1. 将分片均匀的分配到各个节点，对索引和搜索做负载均衡。 
+1. 冗余每一个分片，防止硬件故障造成的数据丢失。 
+1. 将集群中任意一个节点上的请求路由到相应数据所在的节点。 
+1. 无论是增加节点，还是移除节点，分片都可以做到无缝的扩展和迁移。</code></pre><p>总结：</p>
+<pre><code>1. 可用于构建高可用和可扩展的系统。扩展的方式可以是购买更好的服务器(纵向扩展(vertical scale or scaling up))或者购买更多的服务器（横向扩展(horizontal scale or scaling out)）。
+1. 虽然能从更强大的硬件中获得更好的性能，但是纵向扩展有它的局限性。真正的扩展应该是横向的，它通过增加节点来均摊负载和增加可靠性。</code></pre><ol>
+<li><p>一个node（节点）就是一个ElasticSearch实例，而一个cluster（集群）由一个或多个节点组成，它们具有相同的cluster.name，协同工作，分享数据和负载。当加入新的节点或者删除节点时，集群会感知到并平衡数据。</p>
+</li>
+<li><p>集群中一个节点会被选举为master（主节点），它将临时管理集群级别的一些变更，例如新建或删除索引、增加或移除节点等。但主节点不参与文档级别的变更或搜索，当流量增长时，主节点不会成为集群的瓶颈</p>
+</li>
+<li><p>查询索引的分片情况：<br> PUT /user<br> {</p>
+<pre><code>&quot;settings&quot;: {
+    &quot;number_of_shards&quot;: 3,
+    &quot;number_of_replicas&quot;: 1
+}</code></pre><p> }</p>
+</li>
+<li><p>问题：</p>
+<ol>
+<li><p>集群的健康状态 yellow表示所有的主分片(primary shards)启动并且正常运行了——集群已经可以正常处理任何请求——但是复制分片(replica shards)还没有全部可用。事实上所有的三个复制分片现在都是 unassigned 状态——它们还未被分配给节点。在同一个节点上保存相同的数据副本是没有必要的，如果这个节点故障了，那所有的数据副本也会丢失。</p>
+<p>如何解决：<br> 在单一节点上运行意味着有单点故障的风险——没有数据备份。幸运的是，要防止单点故障，我们唯一需要做的就是启动另一个节点。只有一个node（节点），是无法使用副本，数据安全性得不到保障</p>
+</li>
+</ol>
+</li>
+</ol>
+<ol>
+<li><p>基本名词：</p>
+<ol>
+<li>number_of_shards：主分片</li>
+<li>number_of_replicas：复制分片</li>
+</ol>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://blog.bflove.cn/2021/03/16/ElasticSearch/%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E9%9B%86%E7%BE%A4/" data-id="ckmbj9dtx0005tgvs9h7pb8ho" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ElasticSearch/" rel="tag">ElasticSearch</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="1.-ElasticSearch/第一章：初识ElasticSearch" class="article article-type-1." itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/03/15/ElasticSearch/%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E5%88%9D%E8%AF%86ElasticSearch/" class="article-date">
+  <time datetime="2021-03-15T09:12:58.000Z" itemprop="datePublished">2021-03-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/15/ElasticSearch/%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E5%88%9D%E8%AF%86ElasticSearch/">初识ElasticSearch</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ol>
+<li>基本概念：索引（indexing）、搜索（search）、聚合（aggregations）</li>
+</ol>
+<p>在ElasticSearch中，文档归属于一种类型（Type）,而这些类型存在索引（index）中，对传统的关系型数据库对比</p>
+<pre><code>Relational Db -&gt; Databases -&gt;Tables -&gt; Rows -&gt;Columns
+
+ElasticSearch -&gt; Indices(索引) -&gt; Types(类型) -&gt; Documents(文档) -&gt; Fields</code></pre><p>ElasticSearch集群中可以包含多个Indices(索引，数据库)，每一个Indices（索引）可以包含多个Types(类型，表)，每一个Types（类型）包含多个文档（Documents，行），然后每个文档包含多个Fields（字段，行）</p>
+<ol>
+<li><p>简单语法：</p>
+<ol>
+<li><p>插入：</p>
+<pre><code>PUT /megacorp/employee/1
+{
+    &quot;first_name&quot;:&quot;Zhang&quot;,
+    &quot;last_name&quot;:&quot;San&quot;,
+    &quot;age&quot;:25
+}</code></pre><p>其中：megacorp为Index（索引名），employee为Type（类型），文档id（员工id）</p>
+</li>
+<li><p>简单查询：</p>
+<ol>
+<li><p>GET /megacorp/employee/1</p>
+<p>根据index（索引名）、Type（类型）以及员工id查询到张三的信息，响应的内容中包含一些文档的元信息，如下所示</p>
+<pre><code>{
+    &quot;_index&quot;: &quot;megacorp&quot;,
+    &quot;_type&quot;: &quot;employee&quot;,
+    &quot;_id&quot;: &quot;1&quot;,
+    &quot;_version&quot;: 1,
+    &quot;found&quot;: true,
+    &quot;_source&quot;: {
+            &quot;first_name&quot;:&quot;Zhang&quot;,
+            &quot;last_name&quot;:&quot;San&quot;,
+            &quot;age&quot;:25
+        }
+}</code></pre></li>
+<li><p>GET /megacorp/employee/_search</p>
+<p>查询指定Index以及Type查询所有员工的数据，使用_search代理原来的文档id，默认会搜索会返回前10个结果。</p>
+<pre><code>{
+    &quot;took&quot;: 10,
+    &quot;timed_out&quot;: false,
+    &quot;_shards&quot;: {
+        ...
+    },
+    &quot;hits&quot;: {
+        &quot;total&quot;: 1,
+        &quot;max_score&quot;: 1,
+        &quot;hits&quot;: [
+            {
+                &quot;_index&quot;: &quot;megacorp&quot;,
+                &quot;_type&quot;: &quot;employee&quot;,
+                &quot;_id&quot;: &quot;1&quot;,
+                &quot;_score&quot;: 1,
+                &quot;_source&quot;: {
+                    &quot;first_name&quot;:&quot;Zhang&quot;,
+                    &quot;last_name&quot;:&quot;San&quot;,
+                    &quot;age&quot;:25
+                }
+            },
+        ]
+    }
+}</code></pre></li>
+<li><p>GET /megacorp/employee/_search?q=last_name:San</p>
+<p> 在请求中依旧使用 _search 关键字，然后将查询语句传递给参数 q=，可以得到姓氏为San的结果</p>
+<pre><code>{
+    &quot;hits&quot;: {
+        &quot;total&quot;: 1,
+        &quot;max_score&quot;: 0.30685282,
+        &quot;hits&quot;: [
+            {
+                &quot;_source&quot;: {
+                    &quot;first_name&quot;:&quot;Zhang&quot;,
+                    &quot;last_name&quot;:&quot;San&quot;,
+                    &quot;age&quot;:25
+                }
+            }
+        ]
+    }
+}</code></pre></li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p>DSL查询（Query DSL 复杂查询）</p>
+<ol>
+<li><p>得到姓氏为San的记录</p>
+<pre><code>GET /megacorp/employee/_search 
+{
+    &quot;query&quot;: {
+        &quot;match&quot;: {
+            &quot;last_name&quot;: &quot;San&quot;
+        }
+    }
+}</code></pre></li>
+<li><p>得到姓氏为San且年龄大于20的员工。</p>
+<pre><code>GET /megacorp/employee/_search
+{
+    &quot;query&quot;:{
+        &quot;filtered&quot;:{
+            &quot;filter&quot;:{
+                &quot;range&quot;:{
+                    &quot;age&quot;:{&quot;gt&quot;:20} //属于区间过滤器(range filter),它用于查找所有年龄大于30岁的数据—— gt 为&quot;greater than&quot;的缩写
+                }
+            },
+            &quot;query&quot;:{
+                &quot;match&quot;:{
+                    &quot;last_name&quot;:&quot;San&quot;//询与之前的 match 语句(query)一致
+                }
+            }
+        }
+    }
+}</code></pre></li>
+</ol>
+</li>
+<li><p>全文搜索</p>
+<ol>
+<li><p>搜索所有名字有a的员工：</p>
+<pre><code>GET /megacorp/employee/_search
+{
+    &quot;query&quot;: {
+        &quot;match&quot;: {
+            &quot;last_name&quot;: &quot;a&quot;
+        }
+    }
+}</code></pre></li>
+</ol>
+</li>
+<li><p>短语搜索</p>
+<ol>
+<li><p>我们想要查询同时包含”rock”和”climbing”（并且是相邻的）的员工记录,要将 match 查询变更为 match_phrase 查询</p>
+<pre><code>GET /megacorp/employee/_search
+{
+    &quot;query&quot;: {
+        &quot;match_phrase&quot;: {
+            &quot;about&quot;: &quot;rock climbing&quot;
+        }
+    }
+}</code></pre></li>
+<li><p>了解为什么文档与查询会匹配，在之前的语句上增加 highlight参数，如：</p>
+<pre><code>GET /megacorp/employee/_search
+{
+    &quot;query&quot;: {
+        &quot;match_phrase&quot;: {
+            &quot;about&quot;: &quot;rock climbing&quot;
+        }
+    },
+    &quot;highlight&quot;: {
+        &quot;fields&quot;: {
+            &quot;about&quot;: {}
+        }
+    }
+}</code></pre></li>
+<li><p>aggregations（聚合），它允许你在数据上生成复杂的分析统计。</p>
+<ol>
+<li><p>例如：让我们找到所有职员中最大的共同点（兴趣爱好）是什么</p>
+<pre><code>GET /megacorp/employee/_search
+{
+    &quot;aggs&quot;: {
+        &quot;all_interests&quot;: {
+            &quot;terms&quot;: {
+                &quot;field&quot;: &quot;interests&quot;
+            }
+        }
+    }
+}</code></pre></li>
+<li><p>例如：如果我们想知道所有姓”Smith”的人最大的共同点（兴趣爱好）</p>
+<pre><code>GET /megacorp/employee/_search
+{
+    &quot;query&quot;: {
+        &quot;match&quot;: {
+            &quot;last_name&quot;: &quot;smith&quot;
+        }
+    },
+    &quot;aggs&quot;: {
+        &quot;all_interests&quot;: {
+            &quot;terms&quot;: {
+                &quot;field&quot;: &quot;interests&quot;
+            }
+        }
+    }
+}</code></pre></li>
+<li><p>聚合也允许分级汇总。例如，让我们统计每种兴趣下职员的平均年龄：</p>
+<pre><code>GET /megacorp/employee/_search
+{
+    &quot;aggs&quot;: {
+        &quot;all_interests&quot;: {
+            &quot;terms&quot;: {
+                &quot;field&quot;: &quot;interests&quot;
+            },
+            &quot;aggs&quot;: {
+                &quot;avg_age&quot;: {
+                    &quot;avg&quot;: {
+                        &quot;field&quot;: &quot;age&quot;
+                    }
+                }
+            }
+        }
+    }
+}</code></pre></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<p>基本名词：</p>
+<p>Index：</p>
+<pre><code>1. 索引（名词）：存储相关文档的地方，复数是indices或indexes。
+2. 索引（动词）：索引一个文档，表示把一个文档存储到索引（名词）里，以便它可以被检索或者查询。与sql中的insert关键字很像，差别是当文档存在，新的文档将覆盖旧的文档。
+3. 倒排索引：传统数据库是为特定的列增加一个索引，但ElasticSearch和Lucene使用一种叫做倒排索引（inverted index）的数据库结构来达到相同目的（默认情况下，文档中所有字段都会被索引，拥有一个倒排索引）</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://blog.bflove.cn/2021/03/15/ElasticSearch/%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E5%88%9D%E8%AF%86ElasticSearch/" data-id="ckmbj9dtw0004tgvs0l0f08jv" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ElasticSearch/" rel="tag">ElasticSearch</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-NetCore/23种设计模式" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/03/14/NetCore/23%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="article-date">
+  <time datetime="2021-03-14T05:11:07.000Z" itemprop="datePublished">2021-03-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/14/NetCore/23%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">23种设计模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://blog.bflove.cn/2021/03/14/NetCore/23%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" data-id="ckmbj9dtu0002tgvs4a1mf93z" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-NetCore/依赖注入" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" class="article-date">
@@ -86,14 +503,14 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h4><span id="aspnet-core-支持依赖关系注入-di-软件设计模式这是一种在类及其依赖关系之间实现控制反转-ioc-的技术">ASP.NET Core 支持依赖关系注入 (DI) 软件设计模式，这是一种在类及其依赖关系之间实现控制反转 (IoC) 的技术。</span></h4><pre><code>依赖注入是控制反转思想的一种实现模式。一种消除类之间依赖关系的设计模式。</code></pre><p>优点：</p>
+        <h4><span id="aspnet-core-支持依赖关系注入-di-软件设计模式这是一种在类及其依赖关系之间实现控制反转-ioc-的技术">ASP.NET Core 支持依赖关系注入 (DI) 软件设计模式，这是一种在类及其依赖关系之间实现控制反转 (IoC) 的技术</span></h4><pre><code>依赖注入是控制反转思想的一种实现模式。一种消除类之间依赖关系的设计模式。重要的方式就是将依赖对象的创建和绑定转移到被依赖对象类的外部来实现。</code></pre><p>优点：</p>
 <ol>
 <li>轻松管理类及类之间的依赖；</li>
 <li>减少代码耦合性；</li>
 <li>提高代码维护性和可扩展性；</li>
 <li>由容器统一创建对象和管理生命周期</li>
 </ol>
-<p>依赖注入的三种方式：属性注入、方法注入、构造函数注入</p>
+<p>依赖注入的三种方式：属性注入、方法（接口）注入、构造函数注入</p>
 <ol>
 <li><p>服务的生命周期：Singleton、Scoped、Transient</p>
 </li>
@@ -146,15 +563,30 @@ ExpressionResolverBuilder：使用表达式树得到目标服务的实例化的�
 <li><p>后续调用GetService()时，字典RealizedServices查找到的是已经替换过的使用表达式树生成的委托。</p>
 </li>
 </ol>
+<ol>
+<li><p>目前流行的IOC容器：</p>
+<ol>
+<li><p>Autofac <a href="http://code.google.com/p/autofac/" target="_blank" rel="noopener">http://code.google.com/p/autofac/</a></p>
+</li>
+<li><p>Spring.NET <a href="http://www.springframework.net/" target="_blank" rel="noopener">http://www.springframework.net/</a></p>
+</li>
+<li><p>Ninject <a href="http://www.ninject.org/" target="_blank" rel="noopener">http://www.ninject.org/</a></p>
+</li>
+<li><p>Castle Windsor <a href="http://www.castleproject.org/container/index.html" target="_blank" rel="noopener">http://www.castleproject.org/container/index.html</a></p>
+<p>更多：<a href="https://www.palmmedia.de/blog/2011/8/30/ioc-container-benchmark-performance-comparison" target="_blank" rel="noopener">https://www.palmmedia.de/blog/2011/8/30/ioc-container-benchmark-performance-comparison</a></p>
+</li>
+</ol>
+</li>
+</ol>
 <p>参考1：<a href="https://www.cnblogs.com/chenwolong/p/DI.html" target="_blank" rel="noopener">https://www.cnblogs.com/chenwolong/p/DI.html</a><br>参考2：<a href="https://blog.csdn.net/weixin_39799646/article/details/110802690" target="_blank" rel="noopener">https://blog.csdn.net/weixin_39799646/article/details/110802690</a><br>参考3：<a href="https://www.cnblogs.com/leoninew/p/try-microsoft-di-1.html" target="_blank" rel="noopener">https://www.cnblogs.com/leoninew/p/try-microsoft-di-1.html</a><br>参考4：<a href="https://blog.csdn.net/qq_36056619/article/details/104210228" target="_blank" rel="noopener">https://blog.csdn.net/qq_36056619/article/details/104210228</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" data-id="ckm7fq9y600015wvs44lq3w4k" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" data-id="ckmbj9dty0006tgvsdg31eyke" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IOC-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" rel="tag">IOC 依赖注入</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DI-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" rel="tag">DI 依赖注入</a></li></ul>
 
     </footer>
   </div>
@@ -186,7 +618,7 @@ ExpressionResolverBuilder：使用表达式树得到目标服务的实例化的�
     <div class="article-entry" itemprop="articleBody">
       
         <p>IoC是什么？</p>
-<p>IoC控制反转（Inversion of control）：是一种是面向对象编程中的一种设计原则，用来减低计算机代码之间的耦合度。其基本思想是：借助于“第三方”实现具有依赖关系的对象之间的解耦，是一种设计思想。</p>
+<p>IoC控制反转（Inversion of control）：是一种是面向对象编程中的一种<font size="4"><strong>设计原则</strong></font>，用来减低计算机代码之间的耦合度。其基本思想是：借助于“第三方”实现具有依赖关系的对象之间的解耦，是一种设计思想。</p>
 <p><img src="/2021/03/10/NetCore/%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC%EF%BC%88IoC%EF%BC%89/a12iw-y5132.png" alt="avatar"></p>
 <p><img src="/2021/03/10/NetCore/%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC%EF%BC%88IoC%EF%BC%89/1957695-bdb55bb000ae89ec.jpg" alt="avatar"></p>
 <p>引进了中间位置的“第三方”，也就是IOC容器，使得A、B、C、D这4个对象没有了耦合关系，齿轮之间的传动全部依靠“第三方”了，全部对象的控制权全部上缴给“第三方”IOC容器。对象A依赖对象B，但通过引入IOC容器后，主动创建对象变成了被动创建，由主动行为变为了被动行为，控制权颠倒过来了，这就是“控制反转”这个名称的由来。</p>
@@ -195,12 +627,33 @@ ExpressionResolverBuilder：使用表达式树得到目标服务的实例化的�
 <li>解耦合（解决了调用者和被调用者依赖耦合关系）</li>
 <li>为了使用较少的代码来实现相应的功能</li>
 </ol>
-<p>参考来源：<a href="https://www.jianshu.com/p/07af9dbbbc4b" target="_blank" rel="noopener">https://www.jianshu.com/p/07af9dbbbc4b</a></p>
+<p>IOC容器的职责：</p>
+<pre><code>依赖查找是IoC的职责,决定加载哪个提供者
+依赖注入是把控制权交给提供者
+
+调用者根据需要在运行时刻创建提供者,而创建方法由IoC提供
+调用者不负责如何创建,创建什么,也不需要知道创建了什么,
+调用者要做的仅仅是传递一个接口给提供者,
+所以说是:
+调用者实现了接口,提供者使用接口
+(比如说,你开放一个事件或者委托,提供者就能在你需要的时刻自动启动,甚至完全接管)</code></pre><ol>
+<li><p>名词：</p>
+<p> 依赖倒置原则（DIP）：一种软件架构设计的原则（抽象概念）。</p>
+<p> 控制反转（IoC）：一种反转流、依赖和接口的方式（DIP的具体实现方式）。</p>
+<p> 依赖注入（DI）：IoC的一种实现方式，用来反转依赖（IoC的具体实现方式）。</p>
+<p> IoC容器：依赖注入的框架，用来映射依赖，管理对象创建和生存周期（DI框架）</p>
+</li>
+</ol>
+<p>参考来源1：<a href="https://www.jianshu.com/p/07af9dbbbc4b" target="_blank" rel="noopener">https://www.jianshu.com/p/07af9dbbbc4b</a><br>参考来源2：<a href="https://www.cnblogs.com/liuhaorain/p/3747470.html" target="_blank" rel="noopener">https://www.cnblogs.com/liuhaorain/p/3747470.html</a></p>
+<p>DI与Factory模式：</p>
+<pre><code>是软件结构控制反转（IoC）的两种实现。
+    依赖注入的名称暗示该引用已注入或提供给您的代码。使用Factory模式，您的代码必须请求引用，以便您的代码访存该对象。两种实现都删除或分离了代码与代码所使用的对象引用的基础类或类型之间的链接。
+    值得注意的是，可以编写Factory模式（或者实际上是抽象Factory模式，即返回新工厂并返回对象引用的工厂的抽象工厂模式），以便在运行时动态选择或链接到所请求对象的类型或类。这使得它们与IoC的另一种实现的Service Locator模式非常相似（甚至比DI更是如此）。</code></pre><p>参考来源1：<a href="https://stackoverflow.com/questions/557742/dependency-injection-vs-factory-pattern" target="_blank" rel="noopener">https://stackoverflow.com/questions/557742/dependency-injection-vs-factory-pattern</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2021/03/10/NetCore/%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC%EF%BC%88IoC%EF%BC%89/" data-id="ckm7fq9yn000b5wvs71o07bmn" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2021/03/10/NetCore/%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC%EF%BC%88IoC%EF%BC%89/" data-id="ckmbj9du0000btgvs8vwtbhy8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IOC/" rel="tag">IOC</a></li></ul>
@@ -317,7 +770,7 @@ namespace RFTest
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2021/03/10/%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/%E5%8F%8D%E5%B0%84/" data-id="ckm7fq9yl00095wvs1fuq6pde" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2021/03/10/%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/%E5%8F%8D%E5%B0%84/" data-id="ckmbj9duf000ptgvscarf9y7a" class="article-share-link">Share</a>
       
       
     </footer>
@@ -353,9 +806,118 @@ namespace RFTest
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2021/03/10/%E5%B8%B8%E8%A7%81%E5%9D%91/while%E4%B8%ADcontinue%E7%9A%84%E5%9D%91/" data-id="ckm7fq9xq00005wvshxi74dv9" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2021/03/10/%E5%B8%B8%E8%A7%81%E5%9D%91/while%E4%B8%ADcontinue%E7%9A%84%E5%9D%91/" data-id="ckmbj9dth0000tgvs56gm5u7w" class="article-share-link">Share</a>
       
       
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-NetCore/六大原则" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/03/07/NetCore/%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99/" class="article-date">
+  <time datetime="2021-03-07T08:11:07.000Z" itemprop="datePublished">2021-03-07</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/07/NetCore/%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99/">六大原则</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ol>
+<li><p>ISP（接口隔离原则）：一个类对另外一个类的依赖应建立在最小的接口上（客户端不应该被迫依赖于它不适用的方法）</p>
+<p>Tip：类不应该依赖于它不需要的接口，一个类对另外一个类的依赖应该建立在最小的接口上。</p>
+</li>
+<li><p>SRP（单一职责原则）：单一职责原则规定一个类有且仅有一个引起它变化的原因</p>
+<ol>
+<li><p>代码重用性：相同功能的代码，不用多次编写</p>
+</li>
+<li><p>可读性：编程规范性，便于其他程序员的阅读和理解</p>
+</li>
+<li><p>可扩展性：当需要增加新的功能时，非常的方便—可维护</p>
+</li>
+<li><p>可靠性：当我们新增功能以后，对原来的功能没有影响</p>
+</li>
+<li><p>使程序呈现高内聚、低耦合的特性</p>
+<p>Tip：单一职责使得类的复杂度降低、提高了复用性以及可维护性</p>
+</li>
+</ol>
+</li>
+<li><p>DIP（依赖倒置原则）：要面向接口编程，不要面向实现编程</p>
+<ol>
+<li><p>高层模块不应该依赖底层模块，二者应该依赖其抽象（依赖接口或抽象类，不要依赖具体的子类）</p>
+</li>
+<li><p>抽象不应该依赖细节，细节应该依赖抽象</p>
+</li>
+<li><p>依赖倒转(倒置)的中心思想是面向接口编程</p>
+</li>
+<li><p>使用接口或抽象类的目的是制定好规范，而不涉及任何具体的操作，把展现细节的任务交给他们的实现类去完成</p>
+</li>
+<li><p>依赖倒转原则是基于这样的设计理念：相对于细节的多变性，抽象的东西要稳定的多。以抽象为基础搭建的架构比以细节为基础的架构要稳定得多</p>
+<p>Tip：面向接口编程，不要面向实现编程，底层模块尽量为抽象类或者接口</p>
+</li>
+</ol>
+</li>
+<li><p>LoD（迪米特法则，最少只是原则）：只与你的直接朋友交谈，不跟“陌生人”说话</p>
+<ol>
+<li><p>一个对象应该对其他对象保持最少的了解</p>
+</li>
+<li><p>类与类关系越密切，耦合度越大</p>
+</li>
+<li><p>迪米特法则(Demeter Priciple)又称最少知道原则，即一个类对自己依赖的类知道的越少越好。也就是说，对于被依赖的类不管多么复杂，都尽量将逻辑封装在类的内部。对外除了提供的public方法，不对外泄露任何消息</p>
+</li>
+<li><p>只与直接朋友通信</p>
+</li>
+<li><p>直接的朋友：每个对象都会与其他对象有耦合关系，只要两个对象之间有耦合关系，我们就说这两个对象之间是朋友关系。耦合的方式越多，依赖、关联、组合、聚合等，其中，我们称出现成员变量，方法参数，方法返回值中的类为直接朋友，而出现在局部变量中的类不是直接的朋友。也就是说，陌生的类最好不要以局部变量的形式出现在类的内部。</p>
+<p>Tip：尽量减少与其他类的相互依赖</p>
+</li>
+</ol>
+</li>
+<li><p>LSP（里氏替换原则）：子类可以扩展父类的功能，但不能改变父类原有的功能</p>
+<ol>
+<li><p>提高代码复用性、可扩展性</p>
+</li>
+<li><p>侵入性（只要继承就必须拥有父类的所有方法和属性，一定程序约束子类）；耦合性增强（父类修改时需要考虑所有子类，很可能造成子类功能出现故障）</p>
+<p>Tip：遵循里氏替换原则，在子类中尽量不要重写父类的方法</p>
+</li>
+</ol>
+</li>
+<li><p>OCP（开闭原则）：软件实体应当对扩展开放，对修改关闭（编程中最基础、最重要的设计原则）</p>
+<ol>
+<li><p>一个软件实体如类，模块和函数应该对扩展开放（对于提供方来说），对修改关闭（对于使用方来说）。用抽象构建框架，用实现扩展细节。</p>
+</li>
+<li><p>当软件需要变化时，尽量通过扩展软件实体的行为来实现变化，而不是通过修改已有的代码来实现变化。</p>
+</li>
+<li><p>编程中遵循其它原则，以及使用设计模式的目的就是遵循开闭原则。</p>
+<p>Tip：对修改关闭，对扩展开放</p>
+</li>
+</ol>
+</li>
+</ol>
+<p>参考来源：<a href="https://www.cnblogs.com/rmxd/category/1674239.html" target="_blank" rel="noopener">https://www.cnblogs.com/rmxd/category/1674239.html</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://blog.bflove.cn/2021/03/07/NetCore/%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99/" data-id="ckmbj9dtz0009tgvs8aghg3z6" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
+
     </footer>
   </div>
   
@@ -492,407 +1054,7 @@ public class FileMap : IEntityMap&lt;Files&gt;
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2020/08/28/EFCore%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/%E4%BD%BF%E7%94%A8EFCore%E9%92%88%E5%AF%B9%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E7%AD%9B%E9%80%89%E6%97%B6%E7%9A%84%E5%9D%91/" data-id="ckm7fq9yh00055wvsch1k5rdn" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-运维/nuget发布避坑" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/08/12/%E8%BF%90%E7%BB%B4/nuget%E5%8F%91%E5%B8%83%E9%81%BF%E5%9D%91/" class="article-date">
-  <time datetime="2020-08-12T03:18:00.000Z" itemprop="datePublished">2020-08-12</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/08/12/%E8%BF%90%E7%BB%B4/nuget%E5%8F%91%E5%B8%83%E9%81%BF%E5%9D%91/">nuget发布避坑</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2><span id="简述">简述</span></h2><ol>
-<li><p>如果希望自己发布的nuget包增加注释，需要在后缀为csproj的文件中增加<generatepackageonbuild>true</generatepackageonbuild>，完整示例如下</p>
- <propertygroup>
- <targetframeworks>netstandard2.0;netstandard2.1</targetframeworks>
- <version>2.0.0</version>
- <authors>zhenlei520</authors>
- <generatepackageonbuild>true</generatepackageonbuild>
- <company>zhenlei520</company>
- <description>dotnet core 基础类库</description>
- <repositoryurl>https://github.com/zhenlei520/System.Extension.Core</repositoryurl>
- <packageprojecturl>https://www.nuget.org/packages/EInfrastructure.Core.Tools/</packageprojecturl>
- <copyright>Copyright ©zhenlei520 2020</copyright>
- <packageiconurl>https://secure.gravatar.com/avatar/932ca0f8eaf4df1aaf221f9a1a897569?s=512</packageiconurl>
- <title>基础类库</title>
- <packagetags>EInfrastructure.Core.Tools EInfrastructure ECommon</packagetags>
-</propertygroup>
-</li>
-<li><p>添加github的nuget源</p>
-<p> nuget source Add -Name “{github}” -Source “<a href="https://nuget.pkg.github.com/{username}/index.json&quot;" target="_blank" rel="noopener">https://nuget.pkg.github.com/{username}/index.json&quot;</a> -{username} -Password {token}</p>
-<p> nuget setApiKey {token} -s {github}</p>
-</li>
-</ol>
-<p>其中github为源的名字，可以自己修改，username为github的用户名，非登录邮箱账号，token为授权token，在右上角Settings→→Developer settings→→Personal access tokens→→Generate new token可以生成新的token，每次生成后需要保存，刷新页面就看不到了，因为需要生成，则选择write：packages，以及read：packages还有repo下的几个权限即可。</p>
-<ol start="3">
-<li><p>构建dotnet项目</p>
-<p> dotnet build -c Release</p>
-</li>
-<li><p>打包dotnet类库</p>
-<p> dotnet pack -c Release –output ./bin/Release/package</p>
-</li>
-</ol>
-<p>其中output为输出包的地址，可以忽略不写</p>
-<ol start="5">
-<li><p>发布dotnet包</p>
-<p> dotnet nuget push {packageName}.nupkg –source {github}</p>
-</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2020/08/12/%E8%BF%90%E7%BB%B4/nuget%E5%8F%91%E5%B8%83%E9%81%BF%E5%9D%91/" data-id="ckm7fq9yj00075wvsbrbtgcrp" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-CSharp基础语法/二、 基础数据类型" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%BA%8C%E3%80%81%20%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="article-date">
-  <time datetime="2020-03-16T03:18:00.000Z" itemprop="datePublished">2020-03-16</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%BA%8C%E3%80%81%20%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">二、 基础数据类型</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>[[TOC]]</p>
-<h2><span id="基础数据类型分为值类型与引用类型">基础数据类型分为值类型与引用类型</span></h2><h3><span id="1-值类型值类型也可称之为基础数据类型包含简单类型枚举类型结构类型三种">1. 值类型（值类型也可称之为基础数据类型,包含简单类型,枚举类型,结构类型三种）</span></h3><p><img src="/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%BA%8C%E3%80%81%20%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/%E5%80%BC%E7%B1%BB%E5%9E%8B.jpg" alt="值类型"><br><img src="/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%BA%8C%E3%80%81%20%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/%E5%80%BC%E7%B1%BB%E5%9E%8B2.jpg" alt="值类型"></p>
-<h3><span id="2-引用类型字符串类型数组类型类类型对象类型接口类型和代理类型">2. 引用类型（字符串类型,数组类型,类类型,对象类型,接口类型和代理类型）</span></h3><p>&ensp;&ensp;&ensp;&ensp;划重点：字符串类型为引用类型，并非值类型，是特殊的引用类型。</p>
-<p>1.1 C#是强制类型语言,编译器会自动检测数据类型,如果不一致则会自动进行数据类型转换。编译器能够自动进行的转换称之为隐式转换。如果不能隐式转换,则需要我们进行显示的转换。</p>
-<pre><code>1.1.1 
-        int a=1;
-        double b = a;//转换成功，隐式转换(总是转为范围更大的数据类型，并且不会发生精确度变化、数字大小变化等等)
-
-        decimal c = 1.2m;//如果声明一个decimal类型的属性，则必须以大写M或者小写m结尾，以便通知编译器此属性为decimal类型，如果为double类型，则需要以大写D或者小写d结尾，因double精度最高，默认可以省略d
-        double d = c;//隐式转换
-
-1.1.2 
-        double a = 1.2;
-        decimal b = (decimal)a;//强制显示转换，double转换为decimal类型会丢失精度，默认double类型精度更高</code></pre><p>1.2 使用System.Convert类的静态成员方法,ToString,ToInt,ToDouble或者其他自定义转换的方法</p>
-<pre><code>int a=10;
-string str= System.Convert.ToString(a);//或者简写为a.ToString();</code></pre><p>1.3 使用.Net框架提供的Parse()方法</p>
-<pre><code>string str=&quot;100&quot;;
-int a = int.Parse(str);//输出结果为100
-bool c=int.TryParse(str,out int b);//如果str可以强转int成功，则c为true，b为100，否则c为false，b为0</code></pre><p>2.1 字符串类型</p>
-<p>&ensp;&ensp;&ensp;&ensp;stirng是System.String的别名,表示由零个或者多个Unicode字符组成的不可变序列。可使用[]访问每个字符。</p>
-<p>&ensp;&ensp;&ensp;&ensp;string welcomeText = “欢迎你”;</p>
-<p>&ensp;&ensp;&ensp;&ensp;welcomeText=”Hi”;</p>
-<p>&ensp;&ensp;&ensp;&ensp;重新赋值之前,内存首先会重新初始化一块区域,并且将值初始化位Hi。原来存放的内存区域不可修改。</p>
-<p>&ensp;&ensp;&ensp;&ensp;string类型为引用类型,string变量本身存储在栈中,而变量所指向<br>的值则存储在托管堆里面。</p>
-<p>2.2 枚举类型</p>
-<pre><code>枚举类型属于值类型,使用方式如下:
-
-enum Gender{
-    Female,
-    male
-};</code></pre><p>2.3 结构体类型<br>C#中的结构体是一种值类型,通常用于表示诸如 Point,Rectangle,Color等轻量级的对象,结构体定义如下所示:</p>
-<pre><code>/// &lt;summary&gt;
-/// 
-/// &lt;/summary&gt;
-public struct Point
-{
-    /// &lt;summary&gt;
-    /// x
-    /// &lt;/summary&gt;
-    public int X { get; private set; }
-
-
-    /// &lt;summary&gt;
-    /// y
-    /// &lt;/summary&gt;
-    public int Y{ get; private set; }
-
-    /// &lt;summary&gt;
-    /// 构造函数
-    /// &lt;/summary&gt;
-    /// &lt;param name=&quot;px&quot;&gt;&lt;/param&gt;
-    /// &lt;param name=&quot;py&quot;&gt;&lt;/param&gt;
-    public Point(int px, int py)
-
-    {
-        X = px;
-        Y = py;
-    }
-}</code></pre><p>2.4 数组类型<br>&ensp;&ensp;&ensp;&ensp;数组是一种引用类型,表示相同类型的数据按照一定的顺序线性排列。声明方法如下:<br>&ensp;&ensp;&ensp;&ensp;type[] 数组名=new type[arrayCount];<br>&ensp;&ensp;&ensp;&ensp;数组的具体使用如下:</p>
-<pre><code>int[] a = new int[] { 1,2,3,4,5} ;
-int[] b = { 1, 2, 3, 4, 5 };//可简写省略new int
-Console.WriteLine (b.Length);//输出：5</code></pre><p>2.5 变量和常量<br>&ensp;&ensp;&ensp;&ensp;变量代表一块内存空间,它存储的值是可以变化的。因为有了变量,我们不再需要记住复杂的内存地址,而是通过变量名来完成内存数据的存取操作。常量在内存里面的值不能修改,声明的时候必须初始化,无法接受新的赋值,默认为静态的,不允许显式使用static关键字进行声明。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%BA%8C%E3%80%81%20%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" data-id="ckm7fq9yg00045wvsbxy668bq" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-CSharp基础语法/一、标识符和关键字" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%B8%80%E3%80%81%E6%A0%87%E8%AF%86%E7%AC%A6%E5%92%8C%E5%85%B3%E9%94%AE%E5%AD%97/" class="article-date">
-  <time datetime="2020-03-16T03:18:00.000Z" itemprop="datePublished">2020-03-16</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%B8%80%E3%80%81%E6%A0%87%E8%AF%86%E7%AC%A6%E5%92%8C%E5%85%B3%E9%94%AE%E5%AD%97/">一、标识符和关键字</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>[[TOC]]</p>
-<h2><span id="1-标识符-标识符是用来识别类-变量-函数或任何其它用户定义的项目-在-c-中类的命名必须遵循如下基本规则">1. 标识符( 标识符是用来识别类、变量、函数或任何其它用户定义的项目。在 C# 中，类的命名必须遵循如下基本规则)</span></h2><p>&ensp;&ensp;&ensp;&ensp;1.1 标识符必须以字母、下划线或 @ 开头，后面可以跟一系列的字母、数字（ 0 - 9 ）、下划线（ _ ）、@。</p>
-<p>&ensp;&ensp;&ensp;&ensp;1.2. 标识符中的第一个字符不能是数字。</p>
-<p>&ensp;&ensp;&ensp;&ensp;1.3. 标识符必须不包含任何嵌入的空格或符号，比如 ? - +! # % ^ &amp; * ( ) [ ] { } . ; : “ ‘ / \。</p>
-<p>&ensp;&ensp;&ensp;&ensp;1.4. 标识符不能是 C# 关键字。除非它们有一个 @ 前缀。 例如，@if 是有效的标识符，但 if 不是，因为 if 是关键字。</p>
-<p>&ensp;&ensp;&ensp;&ensp;1.5. 标识符必须区分大小写。大写字母和小写字母被认为是不同的字母。</p>
-<p>&ensp;&ensp;&ensp;&ensp;1.6. 不能与C#的类库名称相同。</p>
-<h2><span id="2-c-关键字">2. C# 关键字</span></h2><p>&ensp;&ensp;&ensp;&ensp;关键字是 C# 编译器预定义的保留字。这些关键字不能用作标识符，但是，如果您想使用这些关键字作为标识符，可以在关键字前面加上 @ 字符作为前缀。在 C# 中，有些标识符在代码的上下文中有特殊的意义，如 get 和 set，这些被称为上下文关键字（contextual keywords）。下表列出了 C# 中的保留关键字（Reserved Keywords）和上下文关键字（Contextual Keywords）：</p>
-<p><img src="/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%B8%80%E3%80%81%E6%A0%87%E8%AF%86%E7%AC%A6%E5%92%8C%E5%85%B3%E9%94%AE%E5%AD%97/%E4%BF%9D%E7%95%99%E5%85%B3%E9%94%AE%E5%AD%97.png" alt="保留关键字"></p>
-<p>Tip：<br>    C#不能以关键字命名属性或方法，否则会编译出错。</p>
-<pre><code>example：
-    string str=&quot;张三&quot;;//编辑通过
-    string int=18;//编译失败，因为int为关键字，不得为属性命名为int
-
-
-    public string GetName(){
-        return &quot;张三&quot;;
-    }//编辑通过
-
-    public string int(){
-        return &quot;张三&quot;;
-    }//编译失败，int为关键字，不得以关键字命名方法</code></pre><p>以上概念来自：<a href="https://blog.csdn.net/qiaoquan3/article/details/77802118" target="_blank" rel="noopener">https://blog.csdn.net/qiaoquan3/article/details/77802118</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%B8%80%E3%80%81%E6%A0%87%E8%AF%86%E7%AC%A6%E5%92%8C%E5%85%B3%E9%94%AE%E5%AD%97/" data-id="ckm7fq9yk00085wvs9kcgb0fw" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-规范/规范真的有用吗" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/08/30/%E8%A7%84%E8%8C%83/%E8%A7%84%E8%8C%83%E7%9C%9F%E7%9A%84%E6%9C%89%E7%94%A8%E5%90%97/" class="article-date">
-  <time datetime="2019-08-30T01:20:00.000Z" itemprop="datePublished">2019-08-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/30/%E8%A7%84%E8%8C%83/%E8%A7%84%E8%8C%83%E7%9C%9F%E7%9A%84%E6%9C%89%E7%94%A8%E5%90%97/">规范真的有用吗</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2><span id="简述">简述</span></h2><p>无规矩不成方圆，编码规范就如同协议，有了Http、TCP等各种协议，计算机之间才能有效地通信，同样的，有了一致的编码规范，程序员之间才能有效地合作。</p>
-<p>大家可能看到上面表述之后，会觉得说的太过于官方，甚至认为这些规范都是官僚制度下产生的浪费大家的编程实践、影响人们开发效率的东西，是领导层为了让项目更好看、更加体面。但我们内心很不服气，只要功能实现了，我怎么样写的都可以，我的代码我做主、属性、方法怎么命名，与你们无关，我懂、能解决就行了，你们看不懂，证明了你很渣，很菜，是你的问题，与我写的代码无关。</p>
-<ol>
-<li><p>点名系统</p>
-<p> 要求：下面需要做是一个简单的点名系统，老师会依次点名，点到的同学必须答1，已答到的同学增加5个小红花，否则减去5个小红花，最后输出未到的同学名单。下面是小王以及小刘两个同学的答案。<br><a href="点名简单实例1.0.zip" title="点名简单实例1.0下载">点击下载</a></p>
-</li>
-</ol>
-<p>看过两者的代码，大家能够发现，功能其实都已经实现了，第一个看起来命名虽然杂乱，但由于目前业务十分简单，目前也能看懂，但是后期如果再有人介入后修改呢，还能像之前一样，那么容易理解吗？</p>
-<h3><span id="新需求">新需求：</span></h3><ol>
-<li>牛老师这个人信佛，认为运气也是实力的一种，希望可以随机抽查前3个，被抽到的人如果未到，那么就减去5个小红花，如果未抽到或者已经到的学生增加5个小红花。</li>
-<li>除牛老师之外，其余老师还希望沿用之前挨个点到的方式进行答到。</li>
-</ol>
-<p>之前开发项目的两个小伙伴已经另谋高就了，目前只能交付给两个新的小伙伴小韩与小帅了。小韩是个刚刚毕业，但很聪明的小伙子，沿用之前小王同学的写法，很快实现了新的功能。小帅同学呢，是一个很爱思考的小伙子，之前曾在某公司就职，现在的项目还在top榜挂着。下面是小韩以及小帅两个同学的答案。<br><a href="点名简单实例2.0.zip" title="点名简单实例2.0下载">点击下载</a></p>
-<p>以上是这四个人针对需求设计出来的一款简单的点名系统，虽然简单，但也反映了很多的问题，小王与小韩同学在命名上，写法上不拘一格，对规范嗤之以鼻，走自己的路线，但给下面的人修改带来了很大的问题，小刘以及小帅同学做事严谨，两者虽然并非一人，但对彼此的代码一看就懂，很快就能上手，且修改难度很小。</p>
-<p>由此可见，代码规范还是有一定的作用的。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2019/08/30/%E8%A7%84%E8%8C%83/%E8%A7%84%E8%8C%83%E7%9C%9F%E7%9A%84%E6%9C%89%E7%94%A8%E5%90%97/" data-id="ckm7fq9yi00065wvs6gu520kp" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-规范/简单实用的编码原则" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/08/30/%E8%A7%84%E8%8C%83/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%94%A8%E7%9A%84%E7%BC%96%E7%A0%81%E5%8E%9F%E5%88%99/" class="article-date">
-  <time datetime="2019-08-30T01:20:00.000Z" itemprop="datePublished">2019-08-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/30/%E8%A7%84%E8%8C%83/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%94%A8%E7%9A%84%E7%BC%96%E7%A0%81%E5%8E%9F%E5%88%99/">简单实用的编码原则</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2><span id="简述">简述</span></h2><p>规范很重要已经不言而喻，谷歌有着自己的开发规范，阿里巴巴也在近几年发布了自己的java开发规范，腾讯、京东、美团、去哪儿等虽然未曾对外界发布自己的开发规范，但内部也有着自己的规范，且规范可能是厚厚的一沓，让人望而生畏。当然我们目前不在那种环境下，无需严格遵从他们的规范，但简单的规范还是很有必要的，且必须要执行，这样做有利于我们后期完善修改代码。</p>
-<p>为什么要制定代码规范？代码规范的意义是什么？</p>
-<ol>
-<li>很多灵异事件可以通过制定规范在上游的时候绕过bug，减少不必要的bug反复出现</li>
-<li>可读性、扩展性更强（让代码变得“更好”）</li>
-</ol>
-<p>那么如何做才能使可读性更强？</p>
-<ol>
-<li>变量、属性命名应该用名词短语或者形容词来命名，不能随意命名，尽量少用或者不用temp等无意义的变量，使用常见的无歧义的名字代替生僻的、多意的名字，例如：使用color而并非tinct</li>
-</ol>
-<p><img src="/2019/08/30/%E8%A7%84%E8%8C%83/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%94%A8%E7%9A%84%E7%BC%96%E7%A0%81%E5%8E%9F%E5%88%99/shirenhua.png" alt="avatar"></p>
-<ol>
-<li><p>不为了精炼而精炼，不能为了让代码看起来更简短而放弃可读性，如下：</p>
-<p> 简单一句话：</p>
-<pre><code>console.Log(&apos;当前站点为：&apos;+(IsWeb?(page==&apos;index&apos;?&apos;首页&apos;:&apos;其他页&apos;):(website==&apos;github&apos;?&apos;代码站&apos;:&apos;&apos;)));</code></pre><p> 不如写成：</p>
-<pre><code>var res=&apos;&apos;;
-if(IsWeb){
-    if(page==&apos;index&apos;){
-        res=&apos;首页&apos;;   
-    }
-    else{
-        res=&apos;其他页&apos;;
-    }
-}
-else{
-    if(website==&apos;github&apos;){
-        res=&apos;代码站&apos;;   
-    }
-    else{
-        res=&apos;&apos;;
-    }
-}
-console.log(res);</code></pre><ol>
-<li><p>不要为了精炼代码而使得理解难度增加。 </p>
-</li>
-<li><p>不写超长代码，每块的代码都是为了实现某个功能而产生的，不要把所有的业务写到一个大的方法块中，建议每块代码不超过100行，甚至更短。</p>
-</li>
-<li><p>单一职责原则。不要让一个方法考虑多种情况，尽可能的让其简单，功能单一，加法类不要写减法操作，足够简单的代码会让人看起来很舒服，不会产生烦躁、反感的情绪（一次只做一件事）。</p>
-</li>
-<li><p>高内聚，低耦合。尽量减少对外部的依赖，避免外界基础层的更换对其造成毁灭性的损失。</p>
-</li>
-<li><p>Don’t repeat yourself 。如果你发现你的代码中存在很多重复、类似的代码，请花时间对其进行重构，适当的重构有助于后期迭代的持续推进。</p>
-</li>
-<li><p>过犹不及。当你的项目不需要考虑多余的情况时，不要为了解耦而解耦，导致代码复杂度上升，理解难度变大。</p>
-</li>
-<li><p>如非必要，尽量不用或者少使用goto（goto会彻底打乱执行流程以及顺序，不当的使用容易造成流程混乱甚至死循环，当代码出现多个goto时，更容易成为意大利面条式代码）</p>
-</li>
-<li><p>变量尽量使用更小的作用域（作用域越大，越是容易被滥用，造成不易发现的问题出现）</p>
-</li>
-<li><p>多思考少写代替后期频繁的更改代码</p>
-</li>
-<li><p>减少代码嵌套，通过提早返回减少代码嵌套</p>
-</li>
-<li><p>合理利用法则使得表达式更简单易懂</p>
-<p>目的：获得该商品正在进行中的营销活动，满足条件：</p>
-<ol>
-<li>当营销活动类型为指定商品参与，且当前商品正好参的营销活动（活动未失效）</li>
-<li>当前营销活动对所有商品生效时（活动未失效）</li>
-</ol>
-<p>活动失效的定义：活动除非结束，否则视为满足条件</p>
-<p>改版前：<br><img src="/2019/08/30/%E8%A7%84%E8%8C%83/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%94%A8%E7%9A%84%E7%BC%96%E7%A0%81%E5%8E%9F%E5%88%99/1.png" alt="avatar"></p>
-</li>
-</ol>
-</li>
-</ol>
-<pre><code>改版后：
-![avatar](2.png)</code></pre><h3><span id="团队开发">团队开发</span></h3><ol>
-<li><p>团队开发时，以模块为一个单位，代替以整个项目为一个单位（通俗讲就是不要将多个模块的东西写到一个文件中去，减少文件冲突的可能性，避免代码被一次又一次的覆盖）</p>
-</li>
-<li><p>保持团队风格。在团队开发中，保持团队风格，避免个人风格与团队风格冲突，例如：团队规定：_this代表this，则不能出现self或者_self等命名（当我们发现团队风格有误时，可以考虑重构项目，重新定制风格但请不要选择与团队风格不一致的正确命名，因为我们知道，保持一致的风格比“正确”更重要）</p>
-<h3><span id="代码美化">代码美化</span></h3></li>
-<li><p>注释不能美化的代码。代码如果足够的简单，则不需要也不必增加多余的注释，但如果代码无法美化，则为难理解的地方增加注释说明，减少理解难度（站在读者的角度思考哪些需要增加注释，写注释的目的是让读者使用更短的时间可以了解到作者的想法与目的，而不是为了注释而注释）</p>
-</li>
-<li><p>重新对项目排版保持一致性与紧凑</p>
-</li>
-<li><p>将代码分成段落</p>
-</li>
-<li><p>使用一致的布局风格、让读者习惯这种方式</p>
-</li>
-<li><p>让相似的代码看上去相似</p>
-</li>
-<li><p>把相关的代码分组，形成代码块</p>
-</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2019/08/30/%E8%A7%84%E8%8C%83/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%94%A8%E7%9A%84%E7%BC%96%E7%A0%81%E5%8E%9F%E5%88%99/" data-id="ckm7fq9ym000a5wvs103cc1h1" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2020/08/28/EFCore%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/%E4%BD%BF%E7%94%A8EFCore%E9%92%88%E5%AF%B9%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E7%AD%9B%E9%80%89%E6%97%B6%E7%9A%84%E5%9D%91/" data-id="ckmbj9dud000ntgvs7vppfc5g" class="article-share-link">Share</a>
       
       
     </footer>
@@ -903,6 +1065,11 @@ console.log(res);</code></pre><ol>
 
   
 
+
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+  </nav>
 
 </section>
         
@@ -915,7 +1082,7 @@ console.log(res);</code></pre><ol>
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/IOC/" rel="tag">IOC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IOC-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" rel="tag">IOC 依赖注入</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DI-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" rel="tag">DI 依赖注入</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ElasticSearch/" rel="tag">ElasticSearch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IOC/" rel="tag">IOC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
     </div>
   </div>
 
@@ -925,7 +1092,7 @@ console.log(res);</code></pre><ol>
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/IOC/" style="font-size: 10px;">IOC</a> <a href="/tags/IOC-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" style="font-size: 10px;">IOC 依赖注入</a>
+      <a href="/tags/DI-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" style="font-size: 10px;">DI 依赖注入</a> <a href="/tags/ElasticSearch/" style="font-size: 20px;">ElasticSearch</a> <a href="/tags/IOC/" style="font-size: 10px;">IOC</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 15px;">设计模式</a>
     </div>
   </div>
 
@@ -947,23 +1114,23 @@ console.log(res);</code></pre><ol>
       <ul>
         
           <li>
+            <a href="/2021/03/16/ElasticSearch/%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E6%95%B0%E6%8D%AE/">数据</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/ElasticSearch/%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E9%9B%86%E7%BE%A4/">分布式集群</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/15/ElasticSearch/%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E5%88%9D%E8%AF%86ElasticSearch/">初识ElasticSearch</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/14/NetCore/23%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">23种设计模式</a>
+          </li>
+        
+          <li>
             <a href="/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/">依赖注入</a>
-          </li>
-        
-          <li>
-            <a href="/2021/03/10/NetCore/%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC%EF%BC%88IoC%EF%BC%89/">控制反转</a>
-          </li>
-        
-          <li>
-            <a href="/2021/03/10/%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/%E5%8F%8D%E5%B0%84/">高级编程/反射</a>
-          </li>
-        
-          <li>
-            <a href="/2021/03/10/%E5%B8%B8%E8%A7%81%E5%9D%91/while%E4%B8%ADcontinue%E7%9A%84%E5%9D%91/">常见坑/while中continue的坑</a>
-          </li>
-        
-          <li>
-            <a href="/2020/08/28/EFCore%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/%E4%BD%BF%E7%94%A8EFCore%E9%92%88%E5%AF%B9%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E7%AD%9B%E9%80%89%E6%97%B6%E7%9A%84%E5%9D%91/">使用EFCore针对枚举类型筛选时的坑</a>
           </li>
         
       </ul>
