@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>分布式增删改查 | 聽雨聲-成功來源於不斷的堅持</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="所有的文档API（ get 、 index 、 delete 、 bulk 、 update 、 mget ）都接收一个 routing 参数，它用来自定义文档到分片的 映射。  自定义路由值可以确保所有相关文档——例如属于同一个人的文档——被保存在同一分片上。  在主分片和复制分片上成功新建索引或删除一个文档的顺序：  客户端给 Node 1 发送新建、索引或删除请求。  节点使用文档的 _i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式增删改查">
+<meta property="og:url" content="https://blog.bflove.cn/2021/03/29/ElasticSearch/%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/index.html">
+<meta property="og:site_name" content="聽雨聲-成功來源於不斷的堅持">
+<meta property="og:description" content="所有的文档API（ get 、 index 、 delete 、 bulk 、 update 、 mget ）都接收一个 routing 参数，它用来自定义文档到分片的 映射。  自定义路由值可以确保所有相关文档——例如属于同一个人的文档——被保存在同一分片上。  在主分片和复制分片上成功新建索引或删除一个文档的顺序：  客户端给 Node 1 发送新建、索引或删除请求。  节点使用文档的 _i">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-03-29T02:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-29T15:21:19.498Z">
+<meta property="article:author" content="聽雨聲">
+<meta property="article:tag" content="ElasticSearch">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="聽雨聲-成功來源於不斷的堅持" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">聽雨聲-成功來源於不斷的堅持</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.bflove.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="3.-ElasticSearch/第四章：分布式增删改查" class="article article-type-3." itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/03/29/ElasticSearch/%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/" class="article-date">
+  <time datetime="2021-03-29T02:00:00.000Z" itemprop="datePublished">2021-03-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      分布式增删改查
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ol>
+<li><p>所有的文档API（ get 、 index 、 delete 、 bulk 、 update 、 mget ）都接收一个 routing 参数，它用来自定义文档到分片的 映射。</p>
+</li>
+<li><p>自定义路由值可以确保所有相关文档——例如属于同一个人的文档——被保存在同一分片上。</p>
+</li>
+<li><p>在主分片和复制分片上成功新建索引或删除一个文档的顺序：</p>
+<ol>
+<li><p>客户端给 Node 1 发送新建、索引或删除请求。</p>
+</li>
+<li><p>节点使用文档的 _id 确定文档属于分片 0 。它转发请求到 Node 3 ，分片 0 位于这个节点上。</p>
+</li>
+<li><p>Node 3 在主分片上执行请求，如果成功，它转发请求到相应的位于 Node 1 和 Node 2 的复制节点上。当所有的复制节点 报告成功， Node 3 报告成功到请求的节点，请求的节点再报告给客户端。</p>
+<p>客户端接收到成功响应的时候，文档的修改已经被应用于主分片和所有的复制分片。你的修改生效了。</p>
+</li>
+</ol>
+</li>
+<li><p>replication</p>
+<ol>
+<li>复制默认的值是 sync 。这将导致主分片得到复制分片的成功响应后才返回。如果你设置 replication 为 async ，请求在主分片上被执行后就会返回给客户端。它依旧会转发请求给复制节点，但你将不知道复制节点成功与否。不建议使用。默认的sync 复制允许Elasticsearch强制反馈传输。 async 复制可能会因为在不等待其它分片就绪的情况下发送过多的请求而使Elasticsearch过载。</li>
+</ol>
+</li>
+<li><p>consistency</p>
+<ol>
+<li>默认主分片在尝试写入时需要规定数量(quorum)或过半的分片（可以是主节点或复制节点）可用。这是防止数据被写入到错 的网络分区。</li>
+<li>规定的数量计算公式：int( (primary + number_of_replicas) / 2 ) + 1</li>
+<li>consistency 允许的值为 one （只有一个主分片）， all （所有主分片和复制分片）或者默认的 quorum 或过半分片。</li>
+</ol>
+</li>
+</ol>
+<p>例如：<br>    如果你定义 了索引有3个复制节点，那规定数量是：</p>
+<pre><code>int( (primary + 3 replicas) / 2 ) + 1 = 3 （1+3）/2+1=3</code></pre><ol>
+<li><p>Tip：</p>
+<ol>
+<li>number_of_replicas 是在索引中的的设置，用来定义复制分片的数量，而不是现在活动的复制节点的数量。</li>
+</ol>
+</li>
+<li><p>timeout</p>
+<p> 当分片副本不足时会怎样？Elasticsearch会等待更多的分片出现。默认等待一分钟。如果需要，你可以设置 timeout 参数让它终止的更早： 100 表示100毫秒， 30s 表示30秒。</p>
+</li>
+<li><p>对于读请求，为了平衡负载，请求节点会为每个请求选择不同的分片——它会循环所有分片副本。</p>
+<ol>
+<li>一个被索引的文档已经存在于主分片上却还没来得及同步到复制分片上。这时复制分片会报告文档未找到， 主分片会成功返回文档。一旦索引请求成功返回给用户，文档则在主分片和复制分片都是可用的。</li>
+</ol>
+</li>
+<li><p>罗列执行局部更新必要的顺序步骤:</p>
+<ol>
+<li>客户端给 Node 1 发送更新请求。</li>
+<li>它转发请求到主分片所在节点 Node 3。</li>
+<li>Node 3 从主分片检索出文档，修改 _source 字段的JSON，然后在主分片上重建索引。如果有其他进程修改了文档，它 以 retry_on_conflict 设置的次数重复步骤3，都未成功则放弃。 </li>
+<li>如果 Node 3 成功更新文档，它同时转发文档的新版本到 Node 1 和 Node 2 上的复制节点以重建索引。当所有复制节点报 告成功， Node 3 返回成功给请求节点，然后返回给客户端。</li>
+</ol>
+</li>
+<li><p>基于文档的复制</p>
+<ol>
+<li><p>当主分片转发更改给复制分片时，并不是转发更新请求，而是转发整个文档的新版本。且这些修改转发到复制节点是异步的，它们并不能保证到达的顺序与发送相同。</p>
+</li>
+<li><p>下面我们将罗列使用一个 bulk 执行多个 create 、 index 、 delete 和 update 请求的顺序步骤：</p>
+<ol>
+<li>客户端向 Node 1 发送 bulk 请求。 </li>
+<li>Node 1 为每个分片构建批量请求，然后转发到这些请求所需的主分片上。</li>
+<li>主分片一个接一个的按序执行操作。当一个操作执行完，主分片转发新文档（或者删除部分）给对应的复制节点，然后 执行下一个操作。复制节点为报告所有操作完成，节点报告给请求节点，请求节点整理响应并返回给客户端。</li>
+</ol>
+</li>
+<li><p>批量中每个引用的文档属于不同的主分片，每个分片可能被分布于集群中的某个节点上。这意味着批量中的每个操作 (action)需要被转发到对应的分片和节点上。</p>
+</li>
+</ol>
+</li>
+<li><p>为什么批量使用奇怪的格式，而并非使用Json数组？</p>
+<p> 批量中每个引用的文档属于不同的主分片，每个分片可能被分布于集群中的某个节点上。这意味着批量中的每个操作 (action)需要被转发到对应的分片和节点上。 如果每个单独的请求被包装到JSON数组中，那意味着我们需要：</p>
+<pre><code>1. 解析JSON为数组（包括文档数据，可能非常大）
+1. 检查每个请求决定应该到哪个分片上
+1. 为每个分片创建一个请求的数组
+1. 序列化这些数组为内部传输格式 发送请求到每个分片</code></pre></li>
+</ol>
+<p>取而代之的，Elasticsearch则是从网络缓冲区中一行一行的直接读取数据。它使用换行符识别和解析action/metadata行，以 决定哪些分片来处理这个请求</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://blog.bflove.cn/2021/03/29/ElasticSearch/%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/" data-id="ckmur0xas0006rwvsds5o5bmz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ElasticSearch/" rel="tag">ElasticSearch</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/03/29/ElasticSearch/%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E6%90%9C%E7%B4%A2%E4%B8%8E%E6%98%A0%E5%B0%84/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          搜索与映射
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/03/16/ElasticSearch/%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E6%95%B0%E6%8D%AE/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">数据</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DI-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" rel="tag">DI 依赖注入</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ElasticSearch/" rel="tag">ElasticSearch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IOC/" rel="tag">IOC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/DI-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" style="font-size: 10px;">DI 依赖注入</a> <a href="/tags/ElasticSearch/" style="font-size: 20px;">ElasticSearch</a> <a href="/tags/IOC/" style="font-size: 10px;">IOC</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 15px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/03/29/ElasticSearch/%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E6%90%9C%E7%B4%A2%E4%B8%8E%E6%98%A0%E5%B0%84/">搜索与映射</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/29/ElasticSearch/%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/">分布式增删改查</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/ElasticSearch/%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E6%95%B0%E6%8D%AE/">数据</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/ElasticSearch/%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E9%9B%86%E7%BE%A4/">分布式集群</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/15/ElasticSearch/%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E5%88%9D%E8%AF%86ElasticSearch/">初识ElasticSearch</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 聽雨聲<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

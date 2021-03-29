@@ -64,6 +64,254 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-NetCore/六大原则" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/03/07/NetCore/%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99/" class="article-date">
+  <time datetime="2021-03-07T08:11:07.000Z" itemprop="datePublished">2021-03-07</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/07/NetCore/%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99/">六大原则</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ol>
+<li><p>ISP（接口隔离原则）：一个类对另外一个类的依赖应建立在最小的接口上（客户端不应该被迫依赖于它不适用的方法）</p>
+<p>Tip：类不应该依赖于它不需要的接口，一个类对另外一个类的依赖应该建立在最小的接口上。</p>
+</li>
+<li><p>SRP（单一职责原则）：单一职责原则规定一个类有且仅有一个引起它变化的原因</p>
+<ol>
+<li><p>代码重用性：相同功能的代码，不用多次编写</p>
+</li>
+<li><p>可读性：编程规范性，便于其他程序员的阅读和理解</p>
+</li>
+<li><p>可扩展性：当需要增加新的功能时，非常的方便—可维护</p>
+</li>
+<li><p>可靠性：当我们新增功能以后，对原来的功能没有影响</p>
+</li>
+<li><p>使程序呈现高内聚、低耦合的特性</p>
+<p>Tip：单一职责使得类的复杂度降低、提高了复用性以及可维护性</p>
+</li>
+</ol>
+</li>
+<li><p>DIP（依赖倒置原则）：要面向接口编程，不要面向实现编程</p>
+<ol>
+<li><p>高层模块不应该依赖底层模块，二者应该依赖其抽象（依赖接口或抽象类，不要依赖具体的子类）</p>
+</li>
+<li><p>抽象不应该依赖细节，细节应该依赖抽象</p>
+</li>
+<li><p>依赖倒转(倒置)的中心思想是面向接口编程</p>
+</li>
+<li><p>使用接口或抽象类的目的是制定好规范，而不涉及任何具体的操作，把展现细节的任务交给他们的实现类去完成</p>
+</li>
+<li><p>依赖倒转原则是基于这样的设计理念：相对于细节的多变性，抽象的东西要稳定的多。以抽象为基础搭建的架构比以细节为基础的架构要稳定得多</p>
+<p>Tip：面向接口编程，不要面向实现编程，底层模块尽量为抽象类或者接口</p>
+</li>
+</ol>
+</li>
+<li><p>LoD（迪米特法则，最少只是原则）：只与你的直接朋友交谈，不跟“陌生人”说话</p>
+<ol>
+<li><p>一个对象应该对其他对象保持最少的了解</p>
+</li>
+<li><p>类与类关系越密切，耦合度越大</p>
+</li>
+<li><p>迪米特法则(Demeter Priciple)又称最少知道原则，即一个类对自己依赖的类知道的越少越好。也就是说，对于被依赖的类不管多么复杂，都尽量将逻辑封装在类的内部。对外除了提供的public方法，不对外泄露任何消息</p>
+</li>
+<li><p>只与直接朋友通信</p>
+</li>
+<li><p>直接的朋友：每个对象都会与其他对象有耦合关系，只要两个对象之间有耦合关系，我们就说这两个对象之间是朋友关系。耦合的方式越多，依赖、关联、组合、聚合等，其中，我们称出现成员变量，方法参数，方法返回值中的类为直接朋友，而出现在局部变量中的类不是直接的朋友。也就是说，陌生的类最好不要以局部变量的形式出现在类的内部。</p>
+<p>Tip：尽量减少与其他类的相互依赖</p>
+</li>
+</ol>
+</li>
+<li><p>LSP（里氏替换原则）：子类可以扩展父类的功能，但不能改变父类原有的功能</p>
+<ol>
+<li><p>提高代码复用性、可扩展性</p>
+</li>
+<li><p>侵入性（只要继承就必须拥有父类的所有方法和属性，一定程序约束子类）；耦合性增强（父类修改时需要考虑所有子类，很可能造成子类功能出现故障）</p>
+<p>Tip：遵循里氏替换原则，在子类中尽量不要重写父类的方法</p>
+</li>
+</ol>
+</li>
+<li><p>OCP（开闭原则）：软件实体应当对扩展开放，对修改关闭（编程中最基础、最重要的设计原则）</p>
+<ol>
+<li><p>一个软件实体如类，模块和函数应该对扩展开放（对于提供方来说），对修改关闭（对于使用方来说）。用抽象构建框架，用实现扩展细节。</p>
+</li>
+<li><p>当软件需要变化时，尽量通过扩展软件实体的行为来实现变化，而不是通过修改已有的代码来实现变化。</p>
+</li>
+<li><p>编程中遵循其它原则，以及使用设计模式的目的就是遵循开闭原则。</p>
+<p>Tip：对修改关闭，对扩展开放</p>
+</li>
+</ol>
+</li>
+</ol>
+<p>参考来源：<a href="https://www.cnblogs.com/rmxd/category/1674239.html" target="_blank" rel="noopener">https://www.cnblogs.com/rmxd/category/1674239.html</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://blog.bflove.cn/2021/03/07/NetCore/%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99/" data-id="ckmur0xb0000krwvs0xbv0ij3" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-EFCore查询优化/使用EFCore针对枚举类型筛选时的坑" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/08/28/EFCore%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/%E4%BD%BF%E7%94%A8EFCore%E9%92%88%E5%AF%B9%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E7%AD%9B%E9%80%89%E6%97%B6%E7%9A%84%E5%9D%91/" class="article-date">
+  <time datetime="2020-08-28T07:29:00.000Z" itemprop="datePublished">2020-08-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/08/28/EFCore%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/%E4%BD%BF%E7%94%A8EFCore%E9%92%88%E5%AF%B9%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E7%AD%9B%E9%80%89%E6%97%B6%E7%9A%84%E5%9D%91/">使用EFCore针对枚举类型筛选时的坑</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2><span id="使用efcore针对枚举类型筛选时的坑">使用EFCore针对枚举类型筛选时的坑</span></h2><p>EF条件中默认不支持枚举类型，枚举类型无法转换为sql语句去查询，最后的结果是在内存中查询的，导致最后得到的数据以及性能都有差距。例如：</p>
+<pre><code>/// &lt;summary&gt;
+/// 文件类型
+/// &lt;/summary&gt;
+public enum FileTypeEnum
+{
+    /// &lt;summary&gt;
+    /// 未知
+    /// &lt;/summary&gt;
+    [Description(&quot;未知&quot;)] Unknow = 0,
+
+    /// &lt;summary&gt;
+    /// 图片
+    /// &lt;/summary&gt;
+    [Description(&quot;图片&quot;)] Img = 1,
+
+    /// &lt;summary&gt;
+    /// 音频
+    /// &lt;/summary&gt;
+    [Description(&quot;音频&quot;)] Audio = 2
+}
+
+/// &lt;summary&gt;
+/// 文件类
+/// &lt;/summary&gt;
+public class Files : AggregateRoot&lt;long&gt;
+{
+    /// &lt;summary&gt;
+    /// 文件名称
+    /// &lt;/summary&gt;
+    public string Name { get; set; }
+
+    /// &lt;summary&gt;
+    /// 文件真实地址
+    /// &lt;/summary&gt;
+    public string Path { get; set; }
+
+    /// &lt;summary&gt;
+    /// 文件类型
+    /// &lt;/summary&gt;
+    public FileTypeEnum FileType { get; set; }
+
+    /// &lt;summary&gt;
+    /// 创建时间
+    /// &lt;/summary&gt;
+    public DateTime CreateTime { get; set; }
+}
+
+
+/// &lt;summary&gt;
+/// 映射文件配置
+/// &lt;/summary&gt;
+public class FileMap : IEntityMap&lt;Files&gt;
+{
+    public void Map(EntityTypeBuilder&lt;Files&gt; builder)
+    {
+        builder.ToTable(&quot;files&quot;);
+        builder.HasKey(t =&gt; t.Id);
+        builder.Property(t =&gt; t.Id).HasMaxLength(50);
+
+        builder.Property(t =&gt; t.Name).HasMaxLength(50);
+        builder.Property(t =&gt; t.Path).HasMaxLength(1000);
+        builder.Property(t =&gt; t.FileType);
+        builder.Property(t =&gt; t.CreateTime);
+    }
+}</code></pre><p>下面是查询的实现类：</p>
+<pre><code>public class FileRepository : RepositoryBase&lt;Files, long&gt;, IPerRequest, IFileRepository
+{
+    public FileRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
+    {
+
+    }
+
+    /// &lt;summary&gt;
+    /// 得到指定文件类型的文件列表
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    public List&lt;Files&gt; GetList(FileTypeEnum fileType,int pageIndex,int pageSize)
+    {
+        return Dbcontext.Set&lt;Files&gt;().Where(x =&gt; x.FileType == fileType).Skip((pageIndex-1)*pageSize).Take(pageSize).ToList();
+    }
+}</code></pre><p>这样的方法是我们经常用到的，平时也不注意，但是这样的代码有很大的性能问题，我们的本意是查询指定文件类型的文件列表，但是最后生成的sql语句却是下面的：</p>
+<pre><code>SELECT `x`.`Id`,  `x`.`CreateTime`,`x`.`FileType`, `x`.`Name`, `x`.`Path` FROM `deyouyun_files` AS `x` Limit 0,20</code></pre><p>虽然最后得到的数据仍然是指定文件类型的文件列表，但是为什么生成的sql语句却没有条件呢，这是因为数据库不支持枚举类型，所以，但很明显我们不希望如此，那么我们可以按照以下方式去调整Map映射即可</p>
+<pre><code>/// &lt;summary&gt;
+/// 映射文件配置
+/// &lt;/summary&gt;
+public class FileMap : IEntityMap&lt;Files&gt;
+{
+    public void Map(EntityTypeBuilder&lt;Files&gt; builder)
+    {
+        builder.ToTable(&quot;files&quot;);
+        builder.HasKey(t =&gt; t.Id);
+        builder.Property(t =&gt; t.Id).HasMaxLength(50);
+
+        builder.Property(t =&gt; t.Name).HasMaxLength(50);
+        builder.Property(t =&gt; t.Path).HasMaxLength(1000);
+        builder.Property(t =&gt; t.FileType).HasConversion(new EnumToNumberConverter&lt;FileTypeEnum,int&gt;());
+        builder.Property(t =&gt; t.CreateTime);
+    }
+}</code></pre><p>调整完成后再次尝试运行即可发现，生成的sql语句如下所示：</p>
+<pre><code>SELECT `x`.`Id`,  `x`.`CreateTime`,`x`.`FileType`, `x`.`Name`, `x`.`Path` FROM `deyouyun_files` AS `x` WHERE `x`.`FileType` = 1 Limit 0,20</code></pre><p>以上所用到的RepositoryBase、AggregateRoot<long>是使用的一个EFCore的基础库，连接地址如下：</long></p>
+<p><a href="https://github.com/zhenlei520/System.Extension.Core" target="_blank" rel="noopener">Github</a></p>
+<p><a href="https://gitee.com/zhenlei520/System.Extension.Core" target="_blank" rel="noopener">Gitee</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://blog.bflove.cn/2020/08/28/EFCore%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/%E4%BD%BF%E7%94%A8EFCore%E9%92%88%E5%AF%B9%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E7%AD%9B%E9%80%89%E6%97%B6%E7%9A%84%E5%9D%91/" data-id="ckmur0xap0003rwvs11c1483s" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-运维/nuget发布避坑" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/08/12/%E8%BF%90%E7%BB%B4/nuget%E5%8F%91%E5%B8%83%E9%81%BF%E5%9D%91/" class="article-date">
@@ -127,7 +375,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2020/08/12/%E8%BF%90%E7%BB%B4/nuget%E5%8F%91%E5%B8%83%E9%81%BF%E5%9D%91/" data-id="ckmbmn3np000ofovsddp15viz" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2020/08/12/%E8%BF%90%E7%BB%B4/nuget%E5%8F%91%E5%B8%83%E9%81%BF%E5%9D%91/" data-id="ckmur0xb1000mrwvs83c80sva" class="article-share-link">Share</a>
       
       
     </footer>
@@ -185,7 +433,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%B8%80%E3%80%81%E6%A0%87%E8%AF%86%E7%AC%A6%E5%92%8C%E5%85%B3%E9%94%AE%E5%AD%97/" data-id="ckmbmn3n80003fovs9e8x3a19" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%B8%80%E3%80%81%E6%A0%87%E8%AF%86%E7%AC%A6%E5%92%8C%E5%85%B3%E9%94%AE%E5%AD%97/" data-id="ckmur0x9x0001rwvse8wbdj34" class="article-share-link">Share</a>
       
       
     </footer>
@@ -283,7 +531,7 @@ Console.WriteLine (b.Length);//输出：5</code></pre><p>2.5 变量和常量<br>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%BA%8C%E3%80%81%20%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" data-id="ckmbmn3nc0006fovshbdn8wgw" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2020/03/16/CSharp%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/%E4%BA%8C%E3%80%81%20%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" data-id="ckmur0xar0005rwvsa6u2eevt" class="article-share-link">Share</a>
       
       
     </footer>
@@ -403,7 +651,7 @@ console.log(res);</code></pre><ol>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2019/08/30/%E8%A7%84%E8%8C%83/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%94%A8%E7%9A%84%E7%BC%96%E7%A0%81%E5%8E%9F%E5%88%99/" data-id="ckmbmn3ni000gfovs12dg5byh" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2019/08/30/%E8%A7%84%E8%8C%83/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%94%A8%E7%9A%84%E7%BC%96%E7%A0%81%E5%8E%9F%E5%88%99/" data-id="ckmur0xay000grwvs3ao5haur" class="article-share-link">Share</a>
       
       
     </footer>
@@ -454,7 +702,7 @@ console.log(res);</code></pre><ol>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://blog.bflove.cn/2019/08/30/%E8%A7%84%E8%8C%83/%E8%A7%84%E8%8C%83%E7%9C%9F%E7%9A%84%E6%9C%89%E7%94%A8%E5%90%97/" data-id="ckmbmn3nq000pfovsaoophb3l" class="article-share-link">Share</a>
+      <a data-url="https://blog.bflove.cn/2019/08/30/%E8%A7%84%E8%8C%83/%E8%A7%84%E8%8C%83%E7%9C%9F%E7%9A%84%E6%9C%89%E7%94%A8%E5%90%97/" data-id="ckmur0xb3000rrwvs540v6aqq" class="article-share-link">Share</a>
       
       
     </footer>
@@ -514,7 +762,11 @@ console.log(res);</code></pre><ol>
       <ul>
         
           <li>
-            <a href="/2021/03/16/ElasticSearch/%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E9%9B%86%E7%BE%A4/">分布式集群</a>
+            <a href="/2021/03/29/ElasticSearch/%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E6%90%9C%E7%B4%A2%E4%B8%8E%E6%98%A0%E5%B0%84/">搜索与映射</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/29/ElasticSearch/%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5/">分布式增删改查</a>
           </li>
         
           <li>
@@ -522,15 +774,11 @@ console.log(res);</code></pre><ol>
           </li>
         
           <li>
+            <a href="/2021/03/16/ElasticSearch/%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E9%9B%86%E7%BE%A4/">分布式集群</a>
+          </li>
+        
+          <li>
             <a href="/2021/03/15/ElasticSearch/%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E5%88%9D%E8%AF%86ElasticSearch/">初识ElasticSearch</a>
-          </li>
-        
-          <li>
-            <a href="/2021/03/14/NetCore/23%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">23种设计模式</a>
-          </li>
-        
-          <li>
-            <a href="/2021/03/10/NetCore/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/">依赖注入</a>
           </li>
         
       </ul>
